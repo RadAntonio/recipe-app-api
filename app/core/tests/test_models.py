@@ -1,6 +1,7 @@
 """
 Test for models.
 """
+from unittest.mock import patch
 from decimal import Decimal
 
 from django.test import TestCase
@@ -77,3 +78,22 @@ class ModelTests(TestCase):
         tag = models.Tag.objects.create(user=user, name='Tag1')
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingridient(self):
+        """Test cerating an ingridient is successful"""
+        user = create_user()
+        ingridient = models.Ingridient.objects.create(
+            user=user,
+            name='Ingridient1'
+        )
+
+        self.assertEqual(str(ingridient), ingridient.name)
+
+    @patch('core.models.uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test generating image path"""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.recipe_image_file_path(None, 'example.jpg')
+
+        self.assertEqual(file_path, f'uploads/recipe/{uuid}.jpg')
